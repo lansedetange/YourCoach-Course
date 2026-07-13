@@ -50,6 +50,10 @@ const headings = [
   '### 步骤 4', '### 常见问题', '### 安全与合规', '### Codex 提示词', '### 产出物',
   '### 验收标准', '### 自查清单', '### 提交记录', '### 延伸阅读', '### 下一课预告',
 ];
+const codexPromptLabels = [
+  '角色：', '任务：', '上下文：', '允许范围：', '禁止范围：',
+  '功能要求：', '安全要求：', '测试要求：', '验收要求：', '报告要求：',
+];
 
 const errors = [];
 const missing = courseFiles.filter((file) => !existsSync(resolve(root, file)));
@@ -73,10 +77,15 @@ if (missing.length) {
     }
   }
 
-  for (const file of courseFiles.slice(0, 5)) {
+  for (const file of courseFiles.slice(0, 6)) {
     const content = readFileSync(resolve(root, file), 'utf8');
     if (!content.includes('### 步骤 1')) errors.push(`${file} 缺少完整课步骤：### 步骤 1`);
     if (content.length < 1500) errors.push(`${file} 内容不足 1,500 UTF-16 代码单元（当前 ${content.length}）`);
+    if (content.includes('本轮骨架：正文将在对应阶段完整编写')) errors.push(`${file} 仍包含课程骨架标记`);
+    const prompt = content.slice(content.indexOf('### Codex 提示词'), content.indexOf('### 产出物'));
+    for (const label of codexPromptLabels) {
+      if (!prompt.includes(label)) errors.push(`${file} 的 Codex 提示词缺少字段：${label}`);
+    }
   }
 
   const mapPath = resolve(root, 'docs/课程总纲.md');
@@ -96,5 +105,5 @@ if (errors.length) {
   for (const error of errors) console.error(`- ${error}`);
   process.exitCode = 1;
 } else {
-  console.log('课程审计通过：38 节课程、20 个固定栏目、5 节完整基础课、课程总纲链接均有效。');
+  console.log('课程审计通过：38 节课程、20 个固定栏目、6 节完整基础课、课程总纲链接均有效。');
 }
