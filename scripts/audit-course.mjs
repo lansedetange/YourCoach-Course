@@ -77,7 +77,7 @@ if (missing.length) {
     }
   }
 
-  for (const file of courseFiles.slice(0, 21)) {
+  for (const file of courseFiles.slice(0, 22)) {
     const content = readFileSync(resolve(root, file), 'utf8');
     if (!content.includes('### 步骤 1')) errors.push(`${file} 缺少完整课步骤：### 步骤 1`);
     if (content.length < 1500) errors.push(`${file} 内容不足 1,500 UTF-16 代码单元（当前 ${content.length}）`);
@@ -105,5 +105,5 @@ if (errors.length) {
   for (const error of errors) console.error(`- ${error}`);
   process.exitCode = 1;
 } else {
-  console.log('课程审计通过：38 节课程、20 个固定栏目、21 节完整基础课、课程总纲链接均有效。');
+  console.log('课程审计通过：38 节课程、20 个固定栏目、22 节完整基础课、课程总纲链接均有效。');
 }
